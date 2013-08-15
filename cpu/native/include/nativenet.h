@@ -24,6 +24,11 @@
 #ifndef NATIVENET_H
 #define NATIVENET_H
 
+#ifdef __FreeBSD__
+#include <sys/types.h>
+#else
+#warning NOT BSD
+#endif
 #include <net/ethernet.h>
 
 #define RX_BUF_SIZE (10)
