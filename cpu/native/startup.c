@@ -39,6 +39,7 @@
 #include "board_internal.h"
 #include "native_internal.h"
 #include "tap.h"
+#include "zep.h"
 
 int (*real_printf)(const char *format, ...);
 int _native_null_in_pipe[2];
@@ -155,7 +156,11 @@ void usage_exit()
     real_printf("usage: %s", _progname);
 
 #ifdef MODULE_NATIVENET
+#ifdef NATIVENET_ZEP
+    real_printf(" <IP> <MCAST> [-i tap_interface]");
+#else
     real_printf(" <tap interface>");
+#endif
 #endif
 
 #ifdef MODULE_UART0
@@ -197,9 +202,16 @@ __attribute__((constructor)) static void startup(int argc, char **argv)
 #ifdef MODULE_UART0
     char *ioparam = NULL;
 #endif
+#ifdef NATIVENET_ZEP
+    char *tap_name = NULL;
+#endif
 
 #ifdef MODULE_NATIVENET
+#ifdef NATIVENET_ZEP
+    if (argc < 3) {
+#else
     if (argc < 2) {
+#endif
         usage_exit();
     }
     argp++;
@@ -228,6 +240,12 @@ __attribute__((constructor)) static void startup(int argc, char **argv)
         else if (strcmp("-o", arg) == 0) {
             stdouttype = "file";
         }
+#ifdef NATIVENET_ZEP
+        else if (strcmp("-i", arg) == 0) {
+            if (argp+1 < argc) {
+                tap_name = argv[++argp];
+            }
+#endif
 #ifdef MODULE_UART0
         else if (strcmp("-t", arg) == 0) {
             stdiotype = "tcp";
@@ -271,7 +289,11 @@ __attribute__((constructor)) static void startup(int argc, char **argv)
     native_cpu_init();
     native_interrupt_init();
 #ifdef MODULE_NATIVENET
+#ifndef NATIVENET_ZEP
     tap_init(argv[1]);
+#else
+    zep_init(argv[1], tap_name, ZEP_DEFAULT_PORT);
+#endif
 #endif
 
     board_init();
