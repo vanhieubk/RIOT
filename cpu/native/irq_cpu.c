@@ -390,8 +390,13 @@ int register_interrupt(int sig, void (*handler)(void))
 
     /* update signal mask if necessary */
     if (native_interrupts_enabled == 0 || _native_in_isr == 1) {
-        dINT();
+        int state = disableIRQ();
+        native_interrupts_enabled = state;
     }
+    
+    /* update ISR sigmask */
+    native_isr_context.uc_sigmask = _native_sig_set_dint;
+
     _native_syscall_leave();
 
     return 0;
@@ -541,6 +546,7 @@ void native_interrupt_init(void)
         err(EXIT_FAILURE, "native_interrupt_init: sigaction");
     }
 
+    native_isr_context.uc_sigmask = _native_sig_set_dint;
 
     puts("RIOT native interrupts/signals initialized.");
 }
