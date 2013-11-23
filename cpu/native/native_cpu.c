@@ -114,6 +114,9 @@ void isr_cpu_switch_context_exit(void)
     DEBUG("XXX: cpu_switch_context_exit()\n");
     if ((sched_context_switch_request == 1) || (active_thread == NULL)) {
         sched_run();
+        if (active_thread == NULL) {
+            warnx("sched_run failed!\n");
+        }
     }
 
     DEBUG("XXX: cpu_switch_context_exit(): calling setcontext(%s)\n\n", active_thread->name);
@@ -133,6 +136,8 @@ void cpu_switch_context_exit()
 {
     if (_native_in_isr == 0) {
         dINT();
+        native_print_signals();
+
         _native_in_isr = 1;
         native_isr_context.uc_stack.ss_sp = __isr_stack;
         native_isr_context.uc_stack.ss_size = SIGSTKSZ;

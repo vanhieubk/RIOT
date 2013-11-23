@@ -125,8 +125,8 @@ void native_print_signals()
     }
 
     for (int i = 1; i < (NSIG); i++) {
-        if (native_irq_handlers[i].func != NULL || i == SIGUSR1) {
-            printf("%s: %s in active thread\n",
+        if (native_irq_handlers[i].func != NULL || i == SIGUSR1 || i == SIGINT) {
+            printf("%s: %s when interrupts are enabled\n",
                    strsignal(i),
                    (sigismember(&_native_sig_set, i) ? "blocked" : "unblocked")
                   );
@@ -137,7 +137,7 @@ void native_print_signals()
         }
 
         if (sigismember(&q, i)) {
-            printf("%s: blocked in this context\n", strsignal(i));
+            printf("%s: blocked in this process\n", strsignal(i));
         }
     }
 }
@@ -299,6 +299,12 @@ void native_isr_entry(int sig, siginfo_t *info, void *context)
     _native_sigpend++;
     //real_write(STDOUT_FILENO, "sigpend\n", 8);
 
+    if (active_thread == NULL) {
+        //real_write(STDOUT_FILENO, "no active thread!!\n", 19);
+        return;
+    }
+
+
     native_isr_context.uc_stack.ss_sp = __isr_stack;
     native_isr_context.uc_stack.ss_size = SIGSTKSZ;
     native_isr_context.uc_stack.ss_flags = 0;
@@ -380,6 +386,11 @@ int register_interrupt(int sig, void (*handler)(void))
                 err(EXIT_FAILURE, "register_interrupt: sigaction");
             }
         }
+    }
+
+    /* update signal mask if necessary */
+    if (native_interrupts_enabled == 0 || _native_in_isr == 1) {
+        dINT();
     }
     _native_syscall_leave();
 

@@ -229,6 +229,9 @@ int8_t send_buf(radio_packet_t *packet)
 int tap_init(char *name)
 {
 
+    /* configure signal handler for fds */
+    register_interrupt(SIGIO, _native_handle_tap_input);
+
 #ifdef __MACH__ /* OSX */
     char clonedev[255] = "/dev/"; /* XXX bad size */
     strncpy(clonedev+5, name, 250);
@@ -284,9 +287,6 @@ int tap_init(char *name)
     }
     memcpy(_native_tap_mac, ifr.ifr_hwaddr.sa_data, ETHER_ADDR_LEN);
 #endif
-
-    /* configure signal handler for fds */
-    register_interrupt(SIGIO, _native_handle_tap_input);
 
 #ifdef __MACH__
     /* tuntap signalled IO is not working in OSX,
