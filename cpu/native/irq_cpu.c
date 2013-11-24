@@ -290,7 +290,7 @@ void isr_set_sigmask(ucontext_t *ctx)
 void native_isr_entry(int sig, siginfo_t *info, void *context)
 {
     (void) info; /* unused at the moment */
-    //printf("\n\033[33m\n\t\tnative_isr_entry(%i)\n\n\033[0m", sig);
+    printf("\n\033[33m\n\t\tnative_isr_entry(%i: %s)\n\n\033[0m", sig, strsignal(sig));
 
     /* save the signal */
     if (real_write(_sig_pipefd[1], &sig, sizeof(int)) == -1) {
@@ -393,7 +393,7 @@ int register_interrupt(int sig, void (*handler)(void))
         int state = disableIRQ();
         native_interrupts_enabled = state;
     }
-    
+
     /* update ISR sigmask */
     native_isr_context.uc_sigmask = _native_sig_set_dint;
 
