@@ -27,3 +27,7 @@ else
 endif
 
 include $(RIOTBOARD)/$(BOARD)/Makefile.dep
+
+valgrind: CFLAGS += -DHAVE_VALGRIND_VALGRIND_H -g
+
+valgrind: all
