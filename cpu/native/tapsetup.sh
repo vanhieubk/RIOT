@@ -6,6 +6,7 @@ COUNT=${2}
 DEFCOUNT="2"
 DEFBRNAME="tapbr0"
 DEFTAPNAME="tap"
+DEFTAPADDRBASE="10.0.0."
 
 if [ -z "${USER}" ]; then
     echo 'need to export $USER'
@@ -22,23 +23,31 @@ fi
 if [ -z "${TAPNAME}" ]; then
     TAPNAME="${DEFTAPNAME}"
 fi
+if [ -z "${TAPADDRBASE}" ]; then
+    TAPADDRBASE="${DEFTAPADDRBASE}"
+fi
 
 if [ "${COMMAND}" = 'create' ]; then
     if [ -z "${COUNT}" ]; then
         COUNT="${DEFCOUNT}"
+    elif [ ${COUNT} -gt 253 ]; then
+        echo "only up to 253 interfaces supported"
+        exit 1
     fi
 
     echo "creating ${BRNAME} ..."
     sudo brctl addbr ${BRNAME} || exit 1
     sudo -s sh -c "echo 1  > /proc/sys/net/ipv6/conf/${BRNAME}/disable_ipv6" || exit 1
     sudo ip link set ${BRNAME} up || exit 1
+    sudo ip addr change dev ${BRNAME} ${TAPADDRBASE}254/8 || exit 1
 
-    for N in $(seq 0 "$((COUNT - 1))"); do
+    for N in $(seq 1 ${COUNT}); do
         echo "creating ${TAPNAME}${N} ..."
         sudo ip tuntap add dev ${TAPNAME}${N} mode tap user ${USER} || exit 1
         sudo -s sh -c "echo 1 > /proc/sys/net/ipv6/conf/${TAPNAME}${N}/disable_ipv6" || exit 1
         sudo brctl addif ${BRNAME} ${TAPNAME}${N} || exit 1
         sudo ip link set ${TAPNAME}${N} up || exit 1
+        sudo ip addr change dev ${TAPNAME}${N} ${TAPADDRBASE}${N}/8 || exit 1
     done
 
 elif [ "${COMMAND}" = 'delete' ]; then
