@@ -245,6 +245,10 @@ __attribute__((constructor)) static void startup(int argc, char **argv)
             if (argp+1 < argc) {
                 tap_name = argv[++argp];
             }
+            else {
+                usage_exit();
+            }
+        }
 #endif
 #ifdef MODULE_UART0
         else if (strcmp("-t", arg) == 0) {
