@@ -178,16 +178,16 @@ int send_buf(radio_packet_t *packet)
     return 0;
 }
 
-int zep_init(char *node, char *name, char *service)
+int zep_init(char *node, char *ifname, char *service)
 {
 #if 0
     /* if this is a tap interface, make it usable */
-    if(name != NULL) {
+    if(ifname != NULL) {
         int tap_fd;
 
 #ifdef __MACH__ /* OSX */
         char clonedev[255] = "/dev/"; /* XXX bad size */
-        strncpy(clonedev+5, name, 250);
+        strncpy(clonedev+5, ifname, 250);
 #else /* Linux */
         struct ifreq ifr;
         char *clonedev = "/dev/net/tun";
@@ -201,7 +201,7 @@ int zep_init(char *node, char *name, char *service)
 #ifndef __MACH__ /* Linux */
         memset(&ifr, 0, sizeof(ifr));
         ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
-        strncpy(ifr.ifr_name, name, IFNAMSIZ);
+        strncpy(ifr.ifr_name, ifname, IFNAMSIZ);
 
         if (ioctl(tap_fd, TUNSETIFF, (void *)&ifr) == -1) {
             warn("ioctl");
@@ -211,7 +211,7 @@ int zep_init(char *node, char *name, char *service)
             exit(EXIT_FAILURE);
         }
 #else
-        printf("Please configure the IP address of %s to %s now and then press return\n", name, node);
+        printf("Please configure the IP address of %s to %s now and then press return\n", ifname, node);
         read(STDIN_FILENO, clonedev, 1);
 #endif
     }
@@ -255,6 +255,47 @@ int zep_init(char *node, char *name, char *service)
     if (rp == NULL) {
         errx(EXIT_FAILURE, "Could not bind\n");
     }
+
+    /* join multicast group */
+    /*
+       int mcast_join(
+           int sockfd,
+           const SA *grp,
+           socklen_t grplen,
+           const char *ifname,
+           u_int ifindex
+         )
+    */
+    SA grp* = rp->sa_data;
+    socklen_t grplen = rp->sa_family;
+
+
+    struct group_req req;
+    int ifindex = 0;
+    if (ifindex > 0) {
+        req.gr_interface = ifindex;
+    } else if (ifname != NULL) {
+        if ((req.gr_interface = if_nametoindex(ifname)) == 0) {
+            err(EXIT_FAILURE, "zep_init: if_nametoindex");
+        }
+    } else {
+        req.gr_interface = 0;
+    }
+    if (grplen > sizeof(req.gr_group)) {
+        errno = EINVAL;
+        err(EXIT_FAILURE, "zep_init");
+    }
+#if 0
+    memcpy(&req.gr_group, grp, grplen);
+    setsockopt(
+                _native_zep_fd,
+                family_to_level(grp->sa_family),
+                MCAST_JOIN_GROUP,
+                &req,
+                sizeof(req)
+            );
+
+#endif
     freeaddrinfo(result);
 
     /* configure signal handler for fds */
@@ -268,12 +309,6 @@ int zep_init(char *node, char *name, char *service)
     /* set file access mode to nonblocking */
     if (fcntl(_native_zep_fd, F_SETFL, O_NONBLOCK|O_ASYNC) == -1) {
         err(EXIT_FAILURE, "zep_init(): fcntl(F_SETFL)");
-    }
-
-    /* allow for broadcast transmission */
-    s = 1;
-    if (setsockopt(_native_zep_fd, SOL_SOCKET, SO_BROADCAST, &s, sizeof(s)) == -1) {
-        err(EXIT_FAILURE, "setsockopt(SO_BROADCAST)");
     }
 
     printf("RIOT native zep interface initialized.\n");
