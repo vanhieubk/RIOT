@@ -180,6 +180,7 @@ int send_buf(radio_packet_t *packet)
 
 int zep_init(char *node, char *name, char *service)
 {
+#if 0
     /* if this is a tap interface, make it usable */
     if(name != NULL) {
         int tap_fd;
@@ -214,6 +215,7 @@ int zep_init(char *node, char *name, char *service)
         read(STDIN_FILENO, clonedev, 1);
 #endif
     }
+#endif
 
     /* set send callback */
     _nativenet_send_packet = send_buf;
