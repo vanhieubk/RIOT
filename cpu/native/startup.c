@@ -208,7 +208,7 @@ __attribute__((constructor)) static void startup(int argc, char **argv)
 
 #ifdef MODULE_NATIVENET
 #ifdef NATIVENET_ZEP
-    if (argc < 3) {
+    if (argc < 2) {
 #else
     if (argc < 2) {
 #endif

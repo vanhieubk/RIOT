@@ -257,17 +257,8 @@ int zep_init(char *node, char *ifname, char *service)
     }
 
     /* join multicast group */
-    /*
-       int mcast_join(
-           int sockfd,
-           const SA *grp,
-           socklen_t grplen,
-           const char *ifname,
-           u_int ifindex
-         )
-    */
-    SA grp* = rp->sa_data;
-    socklen_t grplen = rp->sa_family;
+    struct sockaddr *grp = rp->ai_addr;
+    socklen_t grplen = rp->ai_addrlen;
 
 
     struct group_req req;
@@ -285,17 +276,15 @@ int zep_init(char *node, char *ifname, char *service)
         errno = EINVAL;
         err(EXIT_FAILURE, "zep_init");
     }
-#if 0
     memcpy(&req.gr_group, grp, grplen);
     setsockopt(
                 _native_zep_fd,
-                family_to_level(grp->sa_family),
+                (grp->sa_family == AF_INET) ? IPPROTO_IP : IPPROTO_IPV6,
                 MCAST_JOIN_GROUP,
                 &req,
                 sizeof(req)
             );
 
-#endif
     freeaddrinfo(result);
 
     /* configure signal handler for fds */
