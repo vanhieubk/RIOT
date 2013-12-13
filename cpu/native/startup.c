@@ -41,6 +41,8 @@
 #include "tap.h"
 #include "zep.h"
 
+const char* (*real_inet_ntop)(int af, const void *src, char *dst, socklen_t size);
+int (*real_inet_pton)(int af, const char *src, void *dst);
 int (*real_printf)(const char *format, ...);
 int _native_null_in_pipe[2];
 int _native_null_out_file;
@@ -193,6 +195,8 @@ __attribute__((constructor)) static void startup(int argc, char **argv)
     *(void **)(&real_read) = dlsym(RTLD_NEXT, "read");
     *(void **)(&real_write) = dlsym(RTLD_NEXT, "write");
     *(void **)(&real_printf) = dlsym(RTLD_NEXT, "printf");
+    *(void **)(&real_inet_ntop) = dlsym(RTLD_NEXT, "inet_ntop");
+    *(void **)(&real_inet_pton) = dlsym(RTLD_NEXT, "inet_pton");
 
     _progname = argv[0];
     int argp = 1;

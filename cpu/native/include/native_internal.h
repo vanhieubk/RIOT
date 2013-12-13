@@ -13,6 +13,7 @@
 #define _NATIVE_INTERNAL_H
 
 #include <signal.h>
+#include <arpa/inet.h>
 
 /**
  * internal functions
@@ -32,6 +33,8 @@ void _native_syscall_enter();
  */
 extern ssize_t (*real_read)(int fd, void *buf, size_t count);
 extern ssize_t (*real_write)(int fd, const void *buf, size_t count);
+extern const char* (*real_inet_ntop)(int af, const void *src, char *dst, socklen_t size);
+extern int (*real_inet_pton)(int af, const char *src, void *dst);
 
 /**
  * data structures

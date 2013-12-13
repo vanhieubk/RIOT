@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+#include "native_internal.h"
 #include "native_multicast.h"
  
 int mcast_socket_outgoing(char *addr, char *group, char *port, int ifidx)
@@ -45,7 +46,7 @@ int mcast_socket_outgoing(char *addr, char *group, char *port, int ifidx)
 	memset(&sa, 0, sizeof(sa));
 	sa.sin6_family = AF_INET6;
 	sa.sin6_port = htons(atoi(port));
-	inet_pton(AF_INET6, group, &sa.sin6_addr);
+	real_inet_pton(AF_INET6, group, &sa.sin6_addr);
 
 	memcpy(&mreq.ipv6mr_multiaddr, &sa.sin6_addr, sizeof(mreq.ipv6mr_multiaddr));
 	mreq.ipv6mr_interface = ifidx;
@@ -105,8 +106,8 @@ int mcast_socket_incoming(char *group, char *port, int ifidx)
 	}
  
     char any[200];
-    if (inet_ntop(AF_INET6, &in6addr_any, any, sizeof(any)) == NULL) {
-        err(EXIT_FAILURE, "inet_ntop");
+    if (real_inet_ntop(AF_INET6, &in6addr_any, any, sizeof(any)) == NULL) {
+        warn("mcast_socket_incoming: real_inet_ntop");
     }
 
     printf("bound_socket: attempting to bind to %s port %s\n", any, port);
@@ -122,13 +123,13 @@ int mcast_socket_incoming(char *group, char *port, int ifidx)
  
     printf("mcast_socket_incoming: attempting to join %s\n", group);
 	memset(&sa, 0, sizeof(sa));
-	i = inet_pton(AF_INET6, group, &sa.sin6_addr);
+	i = real_inet_pton(AF_INET6, group, &sa.sin6_addr);
 	switch (i) {
         case -1:
-            err(EXIT_FAILURE, "mcast_socket_incoming, inet_pton(%s)", group);
+            err(EXIT_FAILURE, "mcast_socket_incoming, real_inet_pton(%s)", group);
             break;
         case 0:
-            errx(EXIT_FAILURE, "mcast_socket_incoming, inet_pton(%s): not a valid address", group);
+            errx(EXIT_FAILURE, "mcast_socket_incoming, real_inet_pton(%s): not a valid address", group);
             break;
         default:
             break;

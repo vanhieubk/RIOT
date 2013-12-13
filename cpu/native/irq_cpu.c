@@ -425,7 +425,7 @@ int unregister_interrupt(int sig)
     return 0;
 }
 
-void shutdown(int sig, siginfo_t *info, void *context)
+void native_shutdown(int sig, siginfo_t *info, void *context)
 {
     (void)sig;
     (void)info;
@@ -518,8 +518,8 @@ void native_interrupt_init(void)
     }
 
     /* allow for ctrl+c to shut down gracefully always */
-    //register_interrupt(SIGINT, shutdown);
-    sa.sa_sigaction = shutdown;
+    //register_interrupt(SIGINT, nativenative__shutdown);
+    sa.sa_sigaction = native_shutdown;
     if (sigdelset(&_native_sig_set, SIGINT) == -1) {
         err(EXIT_FAILURE, "native_interrupt_init: sigdelset");
     }
