@@ -41,17 +41,18 @@
 #endif
 
 
-#define ENABLE_DEBUG    (0)
+#define ENABLE_DEBUG    (1)
 #include "debug.h"
 
 #include "cpu.h"
 #include "cpu-conf.h"
 #include "zep.h"
+#include "native_multicast.h"
 #include "nativenet.h"
 #include "nativenet_internal.h"
 #include "native_internal.h"
 
-int _native_zep_fd;
+int _native_zep_fd_out, _native_zep_fd_in;
 
 int _native_marshall_zep(uint8_t *packbuf, radio_packet_t *packet);
 
@@ -65,7 +66,7 @@ void _native_handle_zep_input(void)
 
     DEBUG("_native_handle_zep_input\n");
 
-    nread = real_read(_native_zep_fd, &zep, sizeof(union zep_frame));
+    nread = real_read(_native_zep_fd_in, &zep, sizeof(union zep_frame));
     DEBUG("_native_handle_zep_input - read %d bytes\n", nread);
     if (nread > 0) {
         if (
@@ -86,7 +87,7 @@ void _native_handle_zep_input(void)
                 _nativenet_handle_packet(&p);
         }
         else {
-            DEBUG("ignoring non-native frame\n");
+            DEBUG("ignoring non-zep frame\n");
         }
 
         /* work around lost signals */
@@ -94,10 +95,10 @@ void _native_handle_zep_input(void)
         struct timeval t;
         memset(&t, 0, sizeof(t));
         FD_ZERO(&rfds);
-        FD_SET(_native_zep_fd, &rfds);
+        FD_SET(_native_zep_fd_in, &rfds);
 
         _native_in_syscall++; // no switching here
-        if (select(_native_zep_fd +1, &rfds, NULL, NULL, &t) == 1) {
+        if (select(_native_zep_fd_in +1, &rfds, NULL, NULL, &t) == 1) {
             int sig = SIGIO;
             real_write(_sig_pipefd[1], &sig, sizeof(int));
             _native_sigpend++;
@@ -164,13 +165,13 @@ int send_buf(radio_packet_t *packet)
 
     DEBUG("send_buf: trying to send %d bytes\n", to_send);
 
-    struct sockaddr_in s;
-    memset(&s, '\0', sizeof(s));
-    s.sin_family = AF_UNSPEC;
-    s.sin_port = htons(atoi(ZEP_DEFAULT_PORT));
-    s.sin_addr.s_addr = htonl(INADDR_BROADCAST);
+	struct sockaddr_in6 sa;
+	memset(&sa, 0, sizeof(struct sockaddr_in6));
+	sa.sin6_family = AF_INET6;
+	sa.sin6_port = htons(atoi(ZEP_DEFAULT_PORT));
+	inet_pton(AF_INET6, "ff02::1", &sa.sin6_addr);
 
-    if ((nsent = sendto(_native_zep_fd, buf, to_send, 0, (struct sockaddr*)&s, sizeof(s))) == -1) {
+    if ((nsent = sendto(_native_zep_fd_out, buf, to_send, 0, (struct sockaddr*)&sa, sizeof(sa))) == -1) {
         warn("sendto");
         return -1;
     }
@@ -220,87 +221,23 @@ int zep_init(char *node, char *ifname, char *service)
     /* set send callback */
     _nativenet_send_packet = send_buf;
 
-    /* get socket hints */
-    struct addrinfo hints;
-    struct addrinfo *result, *rp;
-    int s;
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
-    hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
-    hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
-    hints.ai_protocol = 0;          /* Any protocol */
-    hints.ai_canonname = NULL;
-    hints.ai_addr = NULL;
-    hints.ai_next = NULL;
-    s = getaddrinfo(node, service, &hints, &result);
-    if (s != 0) {
-        errx(EXIT_FAILURE, "getaddrinfo: %s\n", gai_strerror(s));
-    }
-    /* bind socket */
-    for (rp = result; rp != NULL; rp = rp->ai_next) {
-        _native_zep_fd = socket(
-                rp->ai_family,
-                rp->ai_socktype,
-                rp->ai_protocol);
-        if (_native_zep_fd == -1) {
-            continue;
-        }
-
-        if (bind(_native_zep_fd, rp->ai_addr, rp->ai_addrlen) == 0) {
-            break;
-        }
-
-        close(_native_zep_fd);
-    }
-    if (rp == NULL) {
-        errx(EXIT_FAILURE, "Could not bind\n");
-    }
-
-    /* join multicast group */
-    struct sockaddr *grp = rp->ai_addr;
-    socklen_t grplen = rp->ai_addrlen;
-
-
-    struct group_req req;
-    int ifindex = 0;
-    if (ifindex > 0) {
-        req.gr_interface = ifindex;
-    } else if (ifname != NULL) {
-        if ((req.gr_interface = if_nametoindex(ifname)) == 0) {
-            err(EXIT_FAILURE, "zep_init: if_nametoindex");
-        }
-    } else {
-        req.gr_interface = 0;
-    }
-    if (grplen > sizeof(req.gr_group)) {
-        errno = EINVAL;
-        err(EXIT_FAILURE, "zep_init");
-    }
-    memcpy(&req.gr_group, grp, grplen);
-    setsockopt(
-                _native_zep_fd,
-                (grp->sa_family == AF_INET) ? IPPROTO_IP : IPPROTO_IPV6,
-                MCAST_JOIN_GROUP,
-                &req,
-                sizeof(req)
-            );
-
-    freeaddrinfo(result);
+    _native_zep_fd_in = mcast_socket_incoming("ff02::1", service, 0);
+    _native_zep_fd_out = mcast_socket_outgoing(node, "ff02::1", service, 0);
 
     /* configure signal handler for fds */
     register_interrupt(SIGIO, _native_handle_zep_input);
 
     /* configure fds to send signals on io */
-    if (fcntl(_native_zep_fd, F_SETOWN, getpid()) == -1) {
+    if (fcntl(_native_zep_fd_in, F_SETOWN, getpid()) == -1) {
         err(EXIT_FAILURE, "zep_init(): fcntl(F_SETOWN)");
     }
 
     /* set file access mode to nonblocking */
-    if (fcntl(_native_zep_fd, F_SETFL, O_NONBLOCK|O_ASYNC) == -1) {
+    if (fcntl(_native_zep_fd_in, F_SETFL, O_NONBLOCK|O_ASYNC) == -1) {
         err(EXIT_FAILURE, "zep_init(): fcntl(F_SETFL)");
     }
 
     printf("RIOT native zep interface initialized.\n");
-    return _native_zep_fd;
+    return _native_zep_fd_in;
 }
 /** @} */

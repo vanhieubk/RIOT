@@ -157,7 +157,7 @@ void usage_exit()
 
 #ifdef MODULE_NATIVENET
 #ifdef NATIVENET_ZEP
-    real_printf(" <IP> <MCAST> [-i tap_interface]");
+    real_printf(" <MCAST> [-i <IP address>] [-I <tap_interface>]");
 #else
     real_printf(" <tap interface>");
 #endif
