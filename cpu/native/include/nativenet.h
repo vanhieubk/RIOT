@@ -31,6 +31,10 @@
 #define TRANSCEIVER_BUFFER_SIZE (3)
 
 #ifndef NATIVE_MAX_DATA_LENGTH
+#ifdef NATIVENET_ZEP
+#include "zep.h"
+#define NATIVE_MAX_DATA_LENGTH (ZEP_LENGTH_MASK)
+#else
 #include "tap.h"
 #ifdef MODULE_SIXLOWPAN
 #define NATIVE_MAX_DATA_LENGTH (255)

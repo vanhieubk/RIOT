@@ -133,7 +133,7 @@ int _native_marshall_zep(uint8_t *framebuf, radio_packet_t *packet)
     dst = htons(packet->dst);
 
     data_len = packet->length + sizeof(struct zep_header);
-    if ((data_len | ZEP_LENGTH_MASK)^ZEP_LENGTH_MASK) {
+    if ((packet->length | ZEP_LENGTH_MASK)^ZEP_LENGTH_MASK) {
         warnx("packet too long, discarding");
         return 0;
     }

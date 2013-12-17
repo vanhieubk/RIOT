@@ -36,7 +36,7 @@ int mcast_socket_outgoing(char *addr, char *group, char *port, int ifidx)
 		err(EXIT_FAILURE, "mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_HOPS)");
 	}
 
-    i = 1;
+    i = 0;
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &i, sizeof(i)) == -1) {
 		err(EXIT_FAILURE, "mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_LOOP)");
 	}
@@ -100,7 +100,7 @@ int mcast_socket_incoming(char *group, char *port, int ifidx)
     /* Linux man 7 ipv6:
      * Control whether the socket sees multicast packets that it has
      * send itself.  Argument is a pointer to boolean. */
-    i = 1;
+    i = 0;
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &i, sizeof(i))) {
 		err(EXIT_FAILURE, "mcast_socket_incoming: setsockopt(IPV6_MULTICAST_LOOP)");
 	}
