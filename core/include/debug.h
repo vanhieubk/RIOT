@@ -25,11 +25,29 @@
 #include <stdio.h>
 
 #if ENABLE_DEBUG
+
+#ifdef HAVE_VALGRIND_H  // TODO: && NATIVE
+#include <valgrind.h>
+#define VG_DEBUG 1
+#elif defined(HAVE_VALGRIND_VALGRIND_H)
+#include <valgrind/valgrind.h>
+#define VG_DEBUG 1
+#endif
+
+
+#if VG_DEBUG
+// use VALGRIND_PRINTF_BACKTRACE if running in valgrind
+#define DEBUG(...) if (RUNNING_ON_VALGRIND) VALGRIND_PRINTF_BACKTRACE(__VA_ARGS__); else printf(__VA_ARGS__);
+#else // ENABLE_DEBUG and not valgrind
 #define DEBUG(...) printf(__VA_ARGS__)
+#endif
+
 #undef ENABLE_DEBUG
-#else
+
+#else // not ENABLE_DEBUG
 #define DEBUG(...)
 #endif
+
 
 /** @} */
 #endif /* __DEBUG_H */
