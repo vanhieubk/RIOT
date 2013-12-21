@@ -33,18 +33,18 @@ int mcast_socket_outgoing(char *addr, char *group, char *port, char *ifname)
         err(EXIT_FAILURE, "mcast_socket_outgoing: if_nametoindex");
     }
     else {
-        warn("mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_IF, %i", ifidx);
+        warnx("mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_IF, %i)", ifidx);
     }
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_IF, &ifidx, sizeof(ifidx)) == -1) {
 		err(EXIT_FAILURE, "mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_IF)");
 	}
 
-    i = 255;
+    i = -1;
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &i, sizeof(i)) == -1) {
 		err(EXIT_FAILURE, "mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_HOPS)");
 	}
 
-    i = 1;
+    i = 0;
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &i, sizeof(i)) == -1) {
 		err(EXIT_FAILURE, "mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_LOOP)");
 	}
@@ -96,7 +96,7 @@ int mcast_socket_incoming(char *group, char *port, char *ifname)
         err(EXIT_FAILURE, "mcast_socket_incoming: if_nametoindex");
     }
     else {
-        warn("mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_IF, %i", ifidx);
+        warnx("mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_IF, %i", ifidx);
     }
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_IF, &ifidx, sizeof(ifidx))) {
 		err(EXIT_FAILURE, "mcast_socket_incoming: setsockopt(IPV6_MULTICAST_IF)");
@@ -107,7 +107,7 @@ int mcast_socket_incoming(char *group, char *port, char *ifname)
      * pointer to an integer.  -1 in the value means use the route
      * default, otherwise it should be between 0 and 255.  */
     //i = 255;
-    i = 255;
+    i = -1;
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &i, sizeof(i))) {
 		err(EXIT_FAILURE, "mcast_socket_incoming: setsockopt(IPV6_MULTICAST_HOPS)");
 	}
@@ -115,7 +115,7 @@ int mcast_socket_incoming(char *group, char *port, char *ifname)
     /* Linux man 7 ipv6:
      * Control whether the socket sees multicast packets that it has
      * send itself.  Argument is a pointer to boolean. */
-    i = 0;
+    i = 1;
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &i, sizeof(i))) {
 		err(EXIT_FAILURE, "mcast_socket_incoming: setsockopt(IPV6_MULTICAST_LOOP)");
 	}
