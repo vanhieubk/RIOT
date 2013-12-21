@@ -181,7 +181,7 @@ int8_t send_buf(radio_packet_t *packet)
 
 int zep_init(char *node, char *ifname, char *service)
 {
-#if 0
+#if 1
     /* if this is a tap interface, make it usable */
     if(ifname != NULL) {
         int tap_fd;

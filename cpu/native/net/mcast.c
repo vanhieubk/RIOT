@@ -29,6 +29,12 @@ int mcast_socket_outgoing(char *addr, char *group, char *port, char *ifname)
 		err(EXIT_FAILURE, "mcast_socket_outgoing: setsockopt(SO_REUSEADDR)");
 	}
 
+    if ((ifidx = if_nametoindex(ifname)) == 0) {
+        err(EXIT_FAILURE, "mcast_socket_outgoing: if_nametoindex");
+    }
+    else {
+        warn("mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_IF, %i", ifidx);
+    }
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_IF, &ifidx, sizeof(ifidx)) == -1) {
 		err(EXIT_FAILURE, "mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_IF)");
 	}
@@ -38,7 +44,7 @@ int mcast_socket_outgoing(char *addr, char *group, char *port, char *ifname)
 		err(EXIT_FAILURE, "mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_HOPS)");
 	}
 
-    i = 0;
+    i = 1;
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &i, sizeof(i)) == -1) {
 		err(EXIT_FAILURE, "mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_LOOP)");
 	}
@@ -88,6 +94,9 @@ int mcast_socket_incoming(char *group, char *port, char *ifname)
      * netdevice(7)) in an integer. */
     if ((ifidx = if_nametoindex(ifname)) == 0) {
         err(EXIT_FAILURE, "mcast_socket_incoming: if_nametoindex");
+    }
+    else {
+        warn("mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_IF, %i", ifidx);
     }
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_IF, &ifidx, sizeof(ifidx))) {
 		err(EXIT_FAILURE, "mcast_socket_incoming: setsockopt(IPV6_MULTICAST_IF)");
