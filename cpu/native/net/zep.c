@@ -152,7 +152,7 @@ int _native_marshall_zep(uint8_t *framebuf, radio_packet_t *packet)
     return data_len;
 }
 
-int send_buf(radio_packet_t *packet)
+int8_t send_buf(radio_packet_t *packet)
 {
     DEBUG("send_buf\n");
     uint8_t buf[sizeof(union zep_frame)];
@@ -176,7 +176,7 @@ int send_buf(radio_packet_t *packet)
         return -1;
     }
 
-    return 0;
+    return (nsent > INT8_MAX ? INT8_MAX : nsent);
 }
 
 int zep_init(char *node, char *ifname, char *service)

@@ -47,6 +47,6 @@ extern radio_address_t _native_net_addr;
 
 
 void _nativenet_handle_packet(radio_packet_t *packet);
-extern int (*_nativenet_send_packet)(radio_packet_t *packet);
+extern int8_t (*_nativenet_send_packet)(radio_packet_t *packet);
 int8_t send_buf(radio_packet_t *packet);
 #endif /* NATIVENET_INTERNAL_H */

@@ -25,7 +25,6 @@
  * create and/or open zep device
  */
 int zep_init();
-int send_buf(radio_packet_t *packet);
 
 #include <stdbool.h>
 #include <time.h>

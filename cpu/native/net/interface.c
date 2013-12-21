@@ -34,7 +34,7 @@
 #include "nativenet_internal.h"
 #include "cpu.h"
 
-int (*_nativenet_send_packet)(radio_packet_t *packet);
+int8_t (*_nativenet_send_packet)(radio_packet_t *packet);
 
 struct nativenet_callback_s {
     void (*func)(void);
