@@ -9,16 +9,18 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <net/if.h>
 
 #include "native_internal.h"
 #include "native_multicast.h"
  
-int mcast_socket_outgoing(char *addr, char *group, char *port, int ifidx)
+int mcast_socket_outgoing(char *addr, char *group, char *port, char *ifname)
 {
 	struct sockaddr_in6 sa;
 	struct ipv6_mreq mreq;
     int s;
     int i;
+    int ifidx;
 
 	s = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
 
@@ -31,7 +33,7 @@ int mcast_socket_outgoing(char *addr, char *group, char *port, int ifidx)
 		err(EXIT_FAILURE, "mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_IF)");
 	}
 
-    i = -1;
+    i = 255;
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &i, sizeof(i)) == -1) {
 		err(EXIT_FAILURE, "mcast_socket_outgoing: setsockopt(IPV6_MULTICAST_HOPS)");
 	}
@@ -58,13 +60,14 @@ int mcast_socket_outgoing(char *addr, char *group, char *port, int ifidx)
     return s;
 }
 
-int mcast_socket_incoming(char *group, char *port, int ifidx)
+int mcast_socket_incoming(char *group, char *port, char *ifname)
 {
 	struct sockaddr_in6 sa;
 	struct ipv6_mreq mreq;
 
     int s; /* socket */
     int i; /* setsockopt option_value */
+    int ifidx;
 
     /* create IPv6 UDP socket: */
 	if ((s = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
@@ -83,6 +86,9 @@ int mcast_socket_incoming(char *group, char *port, int ifidx)
      * This is allowed only  for SOCK_DGRAM  and  SOCK_RAW socket.
      * The argument is a pointer to an interface index (see
      * netdevice(7)) in an integer. */
+    if ((ifidx = if_nametoindex(ifname)) == 0) {
+        err(EXIT_FAILURE, "mcast_socket_incoming: if_nametoindex");
+    }
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_IF, &ifidx, sizeof(ifidx))) {
 		err(EXIT_FAILURE, "mcast_socket_incoming: setsockopt(IPV6_MULTICAST_IF)");
 	}
@@ -92,7 +98,7 @@ int mcast_socket_incoming(char *group, char *port, int ifidx)
      * pointer to an integer.  -1 in the value means use the route
      * default, otherwise it should be between 0 and 255.  */
     //i = 255;
-    i = -1;
+    i = 255;
 	if (setsockopt(s, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &i, sizeof(i))) {
 		err(EXIT_FAILURE, "mcast_socket_incoming: setsockopt(IPV6_MULTICAST_HOPS)");
 	}

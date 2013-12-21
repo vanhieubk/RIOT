@@ -221,8 +221,8 @@ int zep_init(char *node, char *ifname, char *service)
     /* set send callback */
     _nativenet_send_packet = send_buf;
 
-    _native_zep_fd_in = mcast_socket_incoming("ff02::1", service, 0);
-    _native_zep_fd_out = mcast_socket_outgoing(node, "ff02::1", service, 0);
+    _native_zep_fd_in = mcast_socket_incoming("ff02::1", service, ifname);
+    _native_zep_fd_out = mcast_socket_outgoing(node, "ff02::1", service, ifname);
 
     /* configure signal handler for fds */
     register_interrupt(SIGIO, _native_handle_zep_input);
