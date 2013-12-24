@@ -169,7 +169,7 @@ int8_t send_buf(radio_packet_t *packet)
 	memset(&sa, 0, sizeof(struct sockaddr_in6));
 	sa.sin6_family = AF_INET6;
 	sa.sin6_port = htons(atoi(ZEP_DEFAULT_PORT));
-	inet_pton(AF_INET6, "ff02::1", &sa.sin6_addr);
+	inet_pton(AF_INET6, "ff02::DB8:1:1", &sa.sin6_addr);
 
     if ((nsent = sendto(_native_zep_fd_out, buf, to_send, 0, (struct sockaddr*)&sa, sizeof(sa))) == -1) {
         warn("sendto");
@@ -221,8 +221,8 @@ int zep_init(char *node, char *ifname, char *service)
     /* set send callback */
     _nativenet_send_packet = send_buf;
 
-    _native_zep_fd_in = mcast_socket_incoming("ff02::1", service, ifname);
-    _native_zep_fd_out = mcast_socket_outgoing(node, "ff02::1", service, ifname);
+    _native_zep_fd_in = mcast_socket_incoming("ff02::DB8:1:1", service, ifname);
+    _native_zep_fd_out = mcast_socket_outgoing(node, "ff02::DB8:1:1", service, ifname);
 
     /* configure signal handler for fds */
     register_interrupt(SIGIO, _native_handle_zep_input);
