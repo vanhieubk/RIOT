@@ -17,15 +17,24 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <unistd.h>
 
 #include "config.h"
+
+#ifdef MODULE_NATIVENET
+#include "nativenet.h"
+#include "nativenet_internal.h"
+#endif
 
 /**
  * XXX: loading not implemented
  */
 void config_load(void)
 {
-    printf("XXX: config_load(): not implemented\n");
+    DEBUG("config_load()\n");
+#ifdef MODULE_NATIVENET
+    _native_net_addr = getpid();
+#endif
     return;
 }
 
