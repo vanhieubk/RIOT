@@ -204,29 +204,40 @@ __asm(".text\n"
 "   pushl   %edx\n"
 "   pushl   %eax\n"
 "   xorl    %ebp,%ebp       # mark deepest stack frame\n"
-"   call    startup ");
+"   call    ___start ");
 
 void
 ___start(int argc, char **argv, char **envp, void (*cleanup)(void))
 {
-    char *namep;
-    char *s;
-
     environ = envp;
 
-    if ((namep = argv[0]) != NULL) {    /* NULL ptr if argc = 0 */
-        if ((__progname = strrchr(namep, '/')) == NULL)
-            __progname = namep;
-        else
+    /* init __progname */
+    if (argc > 0) {
+        if ((__progname = strrchr(argv[0], '/')) == NULL) {
+            __progname = argv[0];
+        }
+        else {
             ++__progname;
-        for (s = __progname_storage; *__progname &&
-            s < &__progname_storage[sizeof __progname_storage - 1]; )
-            *s++ = *__progname++;
-        *s = '\0';
+        }
+
+        char *p;
+        for (p = __progname_storage;
+                *__progname
+                    && p < &__progname_storage[sizeof __progname_storage - 1];
+            ) {
+            *p++ = *__progname++;
+        }
+        *p = '\0';
+
         __progname = __progname_storage;
     }
+
+    if (cleanup) {
+        atexit(cleanup);
+    }
+
     startup(argc, argv, environ);
-    exit(EXIT_FAILURE);
+    exit(EXIT_SUCCESS);
 }
 
 
