@@ -13,6 +13,34 @@
 #define _NATIVE_INTERNAL_H
 
 #include <signal.h>
+//#include <sys/param.h>
+
+/* enable signal handler register access on different platforms
+ * check here for more:
+ * http://sourceforge.net/p/predef/wiki/OperatingSystems/
+ */
+#if (defined(BSD) || defined(__FreeBSD__)) // BSD = (FreeBSD, Darwin, ...)
+#ifndef _XOPEN_SOURCE
+#define _XOPEN_SOURCE
+#include <ucontext.h>
+#undef _XOPEN_SOURCE
+#else
+#include <ucontext.h>
+#endif
+#elif defined(__linux__)
+#ifndef _GNU_SOURCE
+#define GNU_SOURCE
+#include <ucontext.h>
+#undef GNU_SOURCE
+#else
+#include <ucontext.h>
+#endif
+#else
+#endif // BSD/Linux
+
+#include "kernel_internal.h"
+#include "sched.h"
+
 
 /**
  * internal functions
@@ -70,33 +98,6 @@ int register_interrupt(int sig, void (*handler)(void));
  * unregister interrupt handler for interrupt sig
  */
 int unregister_interrupt(int sig);
-
-//#include <sys/param.h>
-
-/* enable signal handler register access on different platforms
- * check here for more:
- * http://sourceforge.net/p/predef/wiki/OperatingSystems/
- */
-#ifdef BSD // BSD = (FreeBSD, Darwin, ...)
-#ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE
-#include <ucontext.h>
-#undef _XOPEN_SOURCE
-#else
-#include <ucontext.h>
-#endif
-#elif defined(__linux__)
-#ifndef _GNU_SOURCE
-#define GNU_SOURCE
-#include <ucontext.h>
-#undef GNU_SOURCE
-#else
-#include <ucontext.h>
-#endif
-#endif // BSD/Linux
-
-#include "kernel_internal.h"
-#include "sched.h"
 
 
 /** @} */

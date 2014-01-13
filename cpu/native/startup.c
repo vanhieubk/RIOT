@@ -37,6 +37,8 @@
 #include "native_internal.h"
 #include "tap.h"
 
+static void startup();
+
 int (*real_printf)(const char *format, ...);
 int _native_null_in_pipe[2];
 int _native_null_out_file;
@@ -179,7 +181,56 @@ The order of command line arguments matters.\n");
 
 }
 
-__attribute__((constructor)) static void startup(int argc, char **argv)
+
+/* we need to provide our own bootstrapping to support both, parameter
+ * parsing and a different main function name */
+char    **environ;
+char    *__progname = "";
+char __progname_storage[4096+1];
+
+__asm(".text\n"
+"   .align  4\n"
+"   .globl  __start\n"
+"   .globl  _start\n"
+"_start:\n"
+"__start:\n"
+"   movl    %esp,%ebp\n"
+"   andl    $~15,%esp       # align stack\n"
+"   pushl   %edx            # cleanup\n"
+"   movl    0(%ebp),%eax\n"
+"   leal    8(%ebp,%eax,4),%ecx\n"
+"   leal    4(%ebp),%edx\n"
+"   pushl   %ecx\n"
+"   pushl   %edx\n"
+"   pushl   %eax\n"
+"   xorl    %ebp,%ebp       # mark deepest stack frame\n"
+"   call    startup ");
+
+void
+___start(int argc, char **argv, char **envp, void (*cleanup)(void))
+{
+    char *namep;
+    char *s;
+
+    environ = envp;
+
+    if ((namep = argv[0]) != NULL) {    /* NULL ptr if argc = 0 */
+        if ((__progname = strrchr(namep, '/')) == NULL)
+            __progname = namep;
+        else
+            ++__progname;
+        for (s = __progname_storage; *__progname &&
+            s < &__progname_storage[sizeof __progname_storage - 1]; )
+            *s++ = *__progname++;
+        *s = '\0';
+        __progname = __progname_storage;
+    }
+    startup(argc, argv, environ);
+    exit(EXIT_FAILURE);
+}
+
+
+static void startup(int argc, char **argv)
 {
     /* get system read/write/printf */
     *(void **)(&real_read) = dlsym(RTLD_NEXT, "read");

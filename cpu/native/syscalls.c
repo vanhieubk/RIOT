@@ -140,6 +140,9 @@ ssize_t write(int fd, const void *buf, size_t count)
     return r;
 }
 
+#ifdef __FreeBSD__
+#undef putchar
+#endif
 int putchar(int c) {
     write(STDOUT_FILENO, &c, 1);
     return 0;

@@ -12,7 +12,10 @@ export LINK = $(PREFIX)gcc
 export SIZE = $(PREFIX)size
 export OBJCOPY = $(PREFIX)objcopy
 
-LINKFLAGS += -m32 -gc -ldl
+LINKFLAGS += -m32 -gc -nostartfiles
+ifneq ($(shell uname -s),FreeBSD)
+	LINKFLAGS += -ldl
+endif
 
 TERMPROG = $(BINDIR)/$(PROJECT).elf
 FLASHER = true
