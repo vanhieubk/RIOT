@@ -156,6 +156,9 @@ void isr_thread_yield()
 
     sched_run();
     ucontext_t *ctx = (ucontext_t *)(active_thread->sp);
+    if (ctx == NULL) {
+        errx(EXIT_FAILURE, "no more context");
+    }
     DEBUG("isr_thread_yield(): switching to(%s)\n\n", active_thread->name);
 
     native_interrupts_enabled = 1;

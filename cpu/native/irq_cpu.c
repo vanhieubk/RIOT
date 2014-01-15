@@ -333,7 +333,9 @@ void native_isr_entry(int sig, siginfo_t *info, void *context)
     makecontext(&native_isr_context, native_irq_handler, 0);
     _native_cur_ctx = (ucontext_t *)active_thread->sp;
 
+    _native_in_isr++;
     DEBUG("\n\n\t\treturn to _native_sig_leave_tramp\n\n");
+    _native_in_isr--;
     /* disable interrupts in context */
     isr_set_sigmask((ucontext_t *)context);
     _native_in_isr = 1;
@@ -348,6 +350,9 @@ void native_isr_entry(int sig, siginfo_t *info, void *context)
     _native_saved_eip = ((ucontext_t *)context)->uc_mcontext.gregs[REG_EIP];
     ((ucontext_t *)context)->uc_mcontext.gregs[REG_EIP] = (unsigned int)&_native_sig_leave_tramp;
 #endif
+    _native_in_isr++;
+    DEBUG("\n\n\t\treturn to syscall\n\n");
+    _native_in_isr--;
 }
 
 /**
@@ -486,6 +491,11 @@ void native_interrupt_init(void)
         err(EXIT_FAILURE, "native_isr_entry(): getcontext()");
     }
 
+
+    unsigned int *stackp = (unsigned int *)__isr_stack;
+    while ((*stackp = (unsigned int)stackp) < ((unsigned int)__isr_stack + SIGSTKSZ)) {
+        stackp++;
+    }
     native_isr_context.uc_stack.ss_sp = __isr_stack;
     native_isr_context.uc_stack.ss_size = SIGSTKSZ;
     native_isr_context.uc_stack.ss_flags = 0;
@@ -520,7 +530,6 @@ void native_interrupt_init(void)
     if (sigaction(SIGINT, &sa, NULL)) {
         err(EXIT_FAILURE, "native_interrupt_init: sigaction");
     }
-
 
     puts("RIOT native interrupts/signals initialized.");
 }

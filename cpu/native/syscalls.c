@@ -32,7 +32,6 @@
 #include <stdarg.h>
 
 #include "cpu.h"
-#include "irq.h"
 
 #include "native_internal.h"
 
@@ -74,7 +73,7 @@ void _native_syscall_leave()
        )
     {
         _native_in_isr = 1;
-        dINT();
+        int state = disableIRQ();
         _native_cur_ctx = (ucontext_t *)active_thread->sp;
         native_isr_context.uc_stack.ss_sp = __isr_stack;
         native_isr_context.uc_stack.ss_size = SIGSTKSZ;
@@ -83,7 +82,7 @@ void _native_syscall_leave()
         if (swapcontext(_native_cur_ctx, &native_isr_context) == -1) {
             err(EXIT_FAILURE, "_native_syscall_leave: swapcontext");
         }
-        eINT();
+        restoreIRQ(state );
     }
 }
 
