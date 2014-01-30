@@ -12,14 +12,13 @@ __native_sig_leave_tramp:
     call _swapcontext
     addl $8, %esp
 
+    movl $0x0, __native_in_isr
     call _eINT
 
-    movl $0x0, __native_in_isr
     popal
     popfl
 
-    popl __native_saved_eip
-    jmp *-4(%esp)
+    ret
 #else
 .extern $_native_saved_eip
 .extern $_native_isr_ctx
@@ -38,12 +37,11 @@ _native_sig_leave_tramp:
     call swapcontext
     addl $8, %esp
 
+    movl $0x0, _native_in_isr
     call eINT
 
-    movl $0x0, _native_in_isr
     popal
     popfl
 
-    popl _native_saved_eip
-    jmp *-4(%esp)
+    ret
 #endif
