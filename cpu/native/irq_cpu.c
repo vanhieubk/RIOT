@@ -147,12 +147,14 @@ unsigned disableIRQ(void)
 {
     unsigned int prev_state;
 
-    _native_syscall_enter();
     DEBUG("disableIRQ()\n");
 
     if (_native_in_isr == 1) {
         DEBUG("disableIRQ + _native_in_isr\n");
+        return 0;
     }
+
+    _native_syscall_enter();
 
     if (sigprocmask(SIG_SETMASK, &_native_sig_set_dint, NULL) == -1) {
         err(EXIT_FAILURE, "disableIRQ(): sigprocmask()");
