@@ -51,7 +51,7 @@ volatile int native_interrupts_enabled;
 volatile int _native_in_isr;
 volatile int _native_in_syscall;
 
-static sigset_t _native_sig_set, _native_sig_set_dint;
+sigset_t _native_sig_set, _native_sig_set_dint;
 
 char __isr_stack[SIGSTKSZ];
 ucontext_t native_isr_context;

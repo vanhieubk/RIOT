@@ -46,6 +46,7 @@ extern int _sig_pipefd[2];
 extern volatile int _native_sigpend;
 extern volatile int _native_in_isr;
 extern volatile int _native_in_syscall;
+extern sigset_t _native_sig_set, _native_sig_set_dint;
 
 extern char __isr_stack[SIGSTKSZ];
 extern char __end_stack[SIGSTKSZ];
