@@ -138,6 +138,7 @@ void cpu_switch_context_exit()
         native_isr_context.uc_stack.ss_sp = __isr_stack;
         native_isr_context.uc_stack.ss_size = SIGSTKSZ;
         native_isr_context.uc_stack.ss_flags = 0;
+        native_isr_context.uc_sigmask = _native_sig_set_dint;
         makecontext(&native_isr_context, isr_cpu_switch_context_exit, 0);
         if (setcontext(&native_isr_context) == -1) {
             err(EXIT_FAILURE, "cpu_switch_context_exit: swapcontext");
@@ -174,6 +175,7 @@ void thread_yield()
         native_isr_context.uc_stack.ss_sp = __isr_stack;
         native_isr_context.uc_stack.ss_size = SIGSTKSZ;
         native_isr_context.uc_stack.ss_flags = 0;
+        native_isr_context.uc_sigmask = _native_sig_set_dint;
         makecontext(&native_isr_context, isr_thread_yield, 0);
         if (swapcontext(ctx, &native_isr_context) == -1) {
             err(EXIT_FAILURE, "thread_yield: swapcontext");

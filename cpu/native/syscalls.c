@@ -79,6 +79,7 @@ void _native_syscall_leave()
         native_isr_context.uc_stack.ss_sp = __isr_stack;
         native_isr_context.uc_stack.ss_size = SIGSTKSZ;
         native_isr_context.uc_stack.ss_flags = 0;
+        native_isr_context.uc_sigmask = _native_sig_set_dint;
         makecontext(&native_isr_context, native_irq_handler, 0);
         if (swapcontext(_native_cur_ctx, &native_isr_context) == -1) {
             err(EXIT_FAILURE, "_native_syscall_leave: swapcontext");

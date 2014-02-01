@@ -330,6 +330,7 @@ void native_isr_entry(int sig, siginfo_t *info, void *context)
     native_isr_context.uc_stack.ss_sp = __isr_stack;
     native_isr_context.uc_stack.ss_size = SIGSTKSZ;
     native_isr_context.uc_stack.ss_flags = 0;
+    native_isr_context.uc_sigmask = _native_sig_set_dint;
     makecontext(&native_isr_context, native_irq_handler, 0);
     _native_cur_ctx = (ucontext_t *)active_thread->sp;
 
@@ -489,6 +490,7 @@ void native_interrupt_init(void)
     native_isr_context.uc_stack.ss_sp = __isr_stack;
     native_isr_context.uc_stack.ss_size = SIGSTKSZ;
     native_isr_context.uc_stack.ss_flags = 0;
+    native_isr_context.uc_sigmask = _native_sig_set_dint;
     _native_isr_ctx = &native_isr_context;
 
     static stack_t sigstk;
