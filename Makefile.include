@@ -18,18 +18,8 @@ $(error This application only runs on following boards: $(BOARD_WHITELIST))
 		endif
 	endif
 
-	ifneq (,$($filter $(BOARD),$(BOARD_BLACKLIST)))
+	ifneq (,$(findstring $(BOARD),$(BOARD_BLACKLIST)))
 $(error This application does not run on following boards: $(BOARD_BLACKLIST))
-	endif
-else
-	ifneq (,$(BOARD_WHITELIST))
-		ifeq (,$(filter $(BOARD),$(BOARD_WHITELIST)))
-$(warning This application only runs on following boards: $(BOARD_WHITELIST))
-		endif
-	endif
-
-	ifneq (,$($filter $(BOARD),$(BOARD_BLACKLIST)))
-$(warning This application does not run on following boards: $(BOARD_BLACKLIST))
 	endif
 endif
 
