@@ -38,7 +38,7 @@
 .func
 dINT:
     mrs     r0,  cpsr
-
+    
     orr     r0, r0, #NOINT              /* Disable Int */
     msr     CPSR_c, r0
     mov     pc,lr
@@ -173,4 +173,4 @@ switch_context_int:
     /* recover general purpose registers */
     ldmfd  sp!, {r0-r12}
 
-    b ctx_switch2
+    b ctx_switch2    

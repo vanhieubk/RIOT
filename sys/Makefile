@@ -94,7 +94,7 @@ ifneq (,$(findstring ccn_lite_client,$(USEMODULE)))
     DIRS += net/ccn_lite/util
 endif
 
-all: $(BINDIR)$(MODULE).a 
+all: $(BINDIR)$(MODULE).a
 	@for i in $(DIRS) ; do "$(MAKE)" -C $$i ; done ;
 
 include $(RIOTBASE)/Makefile.base

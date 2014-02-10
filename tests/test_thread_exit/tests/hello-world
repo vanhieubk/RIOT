@@ -2,10 +2,10 @@
 
 set timeout 5
 
-spawn board/msba2/tools/bin/pseudoterm $env(PORT) 
+spawn board/msba2/tools/bin/pseudoterm $env(PORT)
 
-expect { 
-    "Hello World!" {} 
+expect {
+    "Hello World!" {}
     timeout { exit 1 }
 }
 

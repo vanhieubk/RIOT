@@ -25,7 +25,7 @@ elif (($NUM_FAIL==0)); then
 else
     BUILD_STATUS="broken!"
 fi
-    
+
 echo "<h2>Revision: ${REVISION} Status: ${BUILD_STATUS}</h2>"
 
 svn log --incremental -v -l 1 ${REPO}@${REVISION} | sed -e 's/$/<br>/'
