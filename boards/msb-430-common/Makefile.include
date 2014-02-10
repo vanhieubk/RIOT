@@ -1,6 +1,6 @@
 ## the cpu to build for
-export CPU = msp430x16x
-export MCU = msp430f1612
+export CPU ?= msp430x16x
+export MCU ?= msp430f1612
 
 # toolchain config
 export PREFIX = msp430-
@@ -16,25 +16,14 @@ export LINKFLAGS = -mmcu=$(MCU) -lgcc
 TERMPROG = $(RIOTBASE)/dist/tools/pyterm/pyterm.py
 export HEXFILE = $(BINDIR)$(PROJECT).hex
 
-
-ifeq ($(strip $(FLASHER)),)
-	export FLASHER = mspdebug
-endif
-
-# set programmer port in FFLAGS manually if needed like this:
-# FFLAGS="-d /dev/ttyUSB0" PROGRAMMER="uif" make flash
-
-ifeq ($(strip $(PROGRAMMER)),)
-	export PROGRAMMER = olimex
-endif
+export FLASHER ?= mspdebug
+export PORT ?= /dev/ttyUSB0
+export PROGRAMMER ?= olimex
 export FFLAGS += -j $(PROGRAMMER)
-
-ifeq ($(strip $(PORT)),)
-	export PORT = /dev/ttyUSB0
-endif
-
 export FFLAGS += "prog $(HEXFILE)"
 
 export USEMODULE += msp430_common
-export INCLUDES += -I $(RIOTCPU)/msp430-common/include/ -I$(RIOTBOARD)/msb-430-common/include -I$(RIOTBOARD)/msb-430-common/drivers/include
+export INCLUDES += -I $(RIOTCPU)/msp430-common/include/ \
+	-I$(RIOTBOARD)/msb-430-common/include \
+	-I$(RIOTBOARD)/msb-430-common/drivers/include
 export OFLAGS = -O ihex

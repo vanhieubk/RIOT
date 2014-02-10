@@ -1,3 +1,3 @@
-MODULE =$(BOARD)_base
+MODULE = $(BOARD)_base
 
 include $(RIOTBASE)/Makefile.base
