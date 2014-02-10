@@ -157,4 +157,3 @@ enum { _REP(0,0) };
 static volatile struct GPIO_struct * const GPIO = (void *) (0x80000000);
 
 #endif
-

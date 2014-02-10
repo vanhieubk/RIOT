@@ -69,4 +69,3 @@ number_of_bits_set(unsigned v)
 
     return c;
 }
-

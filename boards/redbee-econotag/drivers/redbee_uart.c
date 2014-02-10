@@ -183,4 +183,3 @@ void bl_uart_init(void)
 {
     uart_init(UART1, BAUTRATE_UART1);
 }
-

@@ -40,4 +40,3 @@ for i in projects/*; do
         } 2>&1
     fi
 done
-

@@ -92,4 +92,3 @@ int8_t cc110x_send(cc110x_packet_t *packet)
 
     return size;
 }
-

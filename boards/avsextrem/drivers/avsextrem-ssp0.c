@@ -425,4 +425,3 @@ unsigned short acam_trx(const uint8_t data)
     SSP0_write(data, ACAMDMS);
     return SSP0_read(ACAMDMS);
 }
-

@@ -183,4 +183,3 @@ mkdir -p ${GNUARM_BUILDDIR}
 cd ${GNUARM_BUILDDIR}
 
 $*
-

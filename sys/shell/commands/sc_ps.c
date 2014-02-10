@@ -23,4 +23,3 @@ void _ps_handler(char *unused)
 
     thread_print_all();
 }
-

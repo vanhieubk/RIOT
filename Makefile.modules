@@ -15,4 +15,3 @@ CFLAGS += $(EXTDEFINES)
 include $(RIOTBASE)/Makefile.dep
 
 export USEMODULE
-

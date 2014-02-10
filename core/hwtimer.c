@@ -217,4 +217,3 @@ int hwtimer_remove(int n)
     hwtimer_arch_enable_interrupt();
     return 1;
 }
-

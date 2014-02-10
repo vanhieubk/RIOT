@@ -23,5 +23,3 @@ done
 
 cat ${HTMLDIR}/footer 
 } > ${OUTFILE}
-
-

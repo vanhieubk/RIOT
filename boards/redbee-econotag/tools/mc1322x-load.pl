@@ -168,4 +168,3 @@ $ob -> close or die "Close failed: $!\n";
 ReadMode 0;
 undef $ob;  # closes port AND frees memory in perl
 exit;
-

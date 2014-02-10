@@ -253,4 +253,3 @@ void cc1100_init_interrupts(void)
     // Enable external interrupt on low edge (for GDO0)
     FIO2DIR &= ~BIT6;
 }
-

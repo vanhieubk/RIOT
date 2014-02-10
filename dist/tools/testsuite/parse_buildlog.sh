@@ -39,5 +39,3 @@ echo "<br> Failed builds/tests: <br>"
     grep '\[.* FAILED\]' ${LOG} | uniq | sed -e 's/$/<br>/'
 fi
 } | tee ${1}.parsed
-
-

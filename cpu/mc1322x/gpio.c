@@ -72,4 +72,3 @@ static inline void gpio_pad_dir_reset(volatile uint64_t data)
         GPIO->PAD_DIR_RESET0 = (data & 0xffffffff);
         GPIO->PAD_DIR_RESET1 = (data >> 32);
 }
-
