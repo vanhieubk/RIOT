@@ -26,15 +26,24 @@
 #include "nativenet_internal.h"
 #endif
 
+#define ENABLE_DEBUG (0)
+#include "debug.h"
+
 /**
  * XXX: loading not implemented
  */
 void config_load(void)
 {
     DEBUG("config_load()\n");
+
+    int pid = getpid();
+
+    sysconfig.id = pid;
+
 #ifdef MODULE_NATIVENET
-    _native_net_addr = getpid();
+    _native_net_addr = pid;
 #endif
+
     return;
 }
 
