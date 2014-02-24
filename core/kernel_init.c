@@ -31,8 +31,15 @@
 #include "lpm.h"
 #include "thread.h"
 
+#define ENABLE_DEBUG (0)
+#include "debug.h"
+
 #ifdef MODULE_AUTO_INIT
 #include <auto_init.h>
+#endif
+
+#ifdef MODULE_CONFIG
+#include "config.h"
 #endif
 
 volatile int lpm_prevent_sleep = 0;
@@ -77,6 +84,11 @@ void kernel_init(void)
     if (thread_create(main_stack, sizeof(main_stack), PRIORITY_MAIN, CREATE_WOUT_YIELD | CREATE_STACKTEST, MAIN_FUNC, main_name) < 0) {
         printf("kernel_init(): error creating main task.\n");
     }
+
+#ifdef MODULE_CONFIG
+    DEBUG("kernel_init(): loading config\n");
+    config_load();
+#endif
 
     printf("kernel_init(): jumping into first task...\n");
 
