@@ -31,7 +31,7 @@ export OFLAGS = -O binary --gap-fill=0xff
 export INCLUDES += -I$(RIOTCPU)/$(CPU)/include/ -I$(RIOTBOARD)/$(BOARD)/include
 
 # un-comment once https://github.com/RIOT-OS/RIOT/issues/676 is fixed
-#ifneq (,$(filter anytransceiver,$(USEMODULE)))
+#ifneq (,$(filter defaulttransceiver,$(USEMODULE)))
 #	ifeq (,$(filter mc1322x,$(USEMODULE)))
 #		USEMODULE += mc1322x
 #	endif

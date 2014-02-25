@@ -1,7 +1,7 @@
 export INCLUDES += -I$(RIOTBOARD)/pttu/include
 
 # Enable this after fixing https://github.com/RIOT-OS/RIOT/issues/659
-#ifneq (,$(filter anytransceiver,$(USEMODULE)))
+#ifneq (,$(filter defaulttransceiver,$(USEMODULE)))
 #	ifeq (,$(filter cc110x,$(USEMODULE)))
 #		USEMODULE += cc110x
 #	endif
