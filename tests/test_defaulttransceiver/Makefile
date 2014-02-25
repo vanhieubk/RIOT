@@ -1,4 +1,4 @@
-export PROJECT = test_anytransceiver
+export PROJECT = test_defaulttransceiver
 export BOARD ?= native
 export RIOTBASE ?= $(CURDIR)/../..
 QUIET ?= 1
@@ -10,7 +10,7 @@ BOARD_BLACKLIST += mbed_lpc1768 # https://github.com/RIOT-OS/RIOT/issues/675
 BOARD_BLACKLIST += redbee-econotag # https://github.com/RIOT-OS/RIOT/issues/676
 
 USEMODULE += auto_init
-USEMODULE += anytransceiver
+USEMODULE += defaulttransceiver
 USEMODULE += hwtimer
 
 include $(RIOTBASE)/Makefile.include
