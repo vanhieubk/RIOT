@@ -8,10 +8,10 @@ ED += $(USEPKG:%=-DMODULE_%)
 EXTDEFINES = $(shell echo $(ED)|tr 'a-z' 'A-Z')
 BL=$(USEMODULE:%= $(BINDIR)%.a)
 
-# Exclude anytransceiver, it is only a pseudomodule that adds other
+# Exclude defaulttransceiver, it is only a pseudomodule that adds other
 # modules depending on the current board.
 export BASELIBS = $(shell echo $(BL)|sed \
-	-e 's/[^ ]*anytransceiver.a//')
+	-e 's/[^ ]*defaulttransceiver.a//')
 
 CFLAGS += $(EXTDEFINES)
 
