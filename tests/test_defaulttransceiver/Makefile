@@ -11,6 +11,5 @@ BOARD_BLACKLIST += redbee-econotag # https://github.com/RIOT-OS/RIOT/issues/676
 
 USEMODULE += auto_init
 USEMODULE += defaulttransceiver
-USEMODULE += hwtimer
 
 include $(RIOTBASE)/Makefile.include
