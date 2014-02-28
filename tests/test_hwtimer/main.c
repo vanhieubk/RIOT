@@ -43,7 +43,7 @@ int main(void)
 
     puts("");
     puts("  Timers should print \"callback x\" when they run out.");
-    puts("  The order for x is 1, n-1, n-2, ..., 2 where n is the number of available hardware timers.");
+    printf("  The order for x is 1, n-1, n-2, ..., 2 where n is the number of available hardware timers (%u on this platform).\n", ARCH_MAXTIMERS);
     puts("  One timer should fire every second.");
     puts("  Additionally the message \"hwtimer set.\" should be printed in 1 second.");
     puts("");
