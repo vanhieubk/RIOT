@@ -41,6 +41,15 @@ int main(void)
 
     puts("Initializing hwtimer [OK].");
 
+    puts("");
+    puts("  Timers should print \"callback x\" when they run out.");
+    puts("  The order for x is 1, n-1, n-2, ..., 2 where n is the number of available hardware timers.");
+    puts("  One timer should fire every second.");
+    puts("  Additionally the message \"hwtimer set.\" should be printed in 1 second.");
+    puts("");
+    puts("Settings timers:");
+    puts("");
+
     unsigned long delay = BASE_DELAY + ((ARCH_MAXTIMERS - 1) * DELTA_DELAY);
 
     /* make the first timer first to fire so timers do not run out linearly */
@@ -58,6 +67,10 @@ int main(void)
         hwtimer_set(HWTIMER_TICKS(delay), callback, (void *) msgn);
         printf("set %s\n", msgn);
     }
+
+    puts("");
+    puts("All timers set.");
+    puts("");
 
     hwtimer_wait(HWTIMER_TICKS(1000UL * 1000UL));
 
