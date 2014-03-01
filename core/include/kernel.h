@@ -88,8 +88,9 @@ extern config_t sysconfig;
  * @brief Immediately reboots the system.
  *
  * This function is used by core_panic() when the DEVELHELP macro is not defined.
- * The argument is ignored and only used for conformity with existing
- * reboot implementations.
+ *
+ * @param mode  The argument is ignored and only used for
+ * conformity with existing reboot implementations.
  *
  * @return This call never returns when successful. -1 is returned otherwise.
  */
