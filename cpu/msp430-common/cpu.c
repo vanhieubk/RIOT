@@ -90,7 +90,7 @@ int inISR()
 /******************************************************************************/
 
 /* System reboot */
-int reboot(int mode)
+int reboot_arch(int mode)
 {
     (void) mode;
 

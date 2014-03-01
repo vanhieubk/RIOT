@@ -86,7 +86,7 @@ void thread_print_stack(void)
     printf("STACK (%u)= %X \n", i, *s);
 }
 
-int reboot(int mode)
+int reboot_arch(int mode)
 {
     (void) mode;
 

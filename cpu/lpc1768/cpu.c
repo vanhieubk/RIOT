@@ -126,7 +126,7 @@ __attribute__((naked,noreturn)) void arm_reset(void)
      );
 }
 
-int reboot(int mode)
+int reboot_arch(int mode)
 {
     (void) mode;
 

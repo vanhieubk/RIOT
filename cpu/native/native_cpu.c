@@ -63,7 +63,7 @@ char __end_stack[SIGSTKSZ];
 fd_set _native_rfds;
 #endif
 
-int reboot(int mode)
+int reboot_arch(int mode)
 {
     (void) mode;
 
