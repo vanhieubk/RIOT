@@ -13,7 +13,7 @@
  * @file        kernel.h
  * @brief       Kernel compile time configuration
  *
- * A reboot() function is also provided (and used by core_panic() when needed).
+ * A int reboot(int mode) function is also provided (and used by core_panic() when needed).
  *
  * @author      Freie Universität Berlin, Computer Systems & Telematics
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
@@ -88,10 +88,12 @@ extern config_t sysconfig;
  * @brief Immediately reboots the system.
  *
  * This function is used by core_panic() when the DEVELHELP macro is not defined.
+ * The argument is ignored and only used for conformity with existing
+ * reboot implementations.
  *
- * @return WARNING: this function NEVER returns!
+ * @return This call never returns when successful. -1 is returned otherwise.
  */
-NORETURN void reboot(void);
+int reboot(int mode);
 
 /** @} */
 #endif /* KERNEL_H_ */
