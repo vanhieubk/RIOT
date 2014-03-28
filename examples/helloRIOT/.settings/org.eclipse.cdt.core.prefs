@@ -1,12 +1,12 @@
 eclipse.preferences.version=1
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/RIOT-base/delimiter=\:
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/RIOT-base/operation=replace
-environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/RIOT-base/value=/home/dangnhat/RIOT-working2/RIOT
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/RIOT-base/value=${PWD}/../../
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/append=true
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/appendContributed=true
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/thirdparty_boards-base/delimiter=\:
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/thirdparty_boards-base/operation=replace
-environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/thirdparty_boards-base/value=/home/dangnhat/RIOT-working2/thirdparty_boards
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/thirdparty_boards-base/value=${PWD}/../../../thirdparty_boards
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/thirdparty_cpu-base/delimiter=\:
-environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/thirdparty_cpu-base/operation=append
-environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/thirdparty_cpu-base/value=/home/dangnhat/RIOT-working2/thirdparty_cpu
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/thirdparty_cpu-base/operation=replace
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.706197991/thirdparty_cpu-base/value=${PWD}/../../../thirdparty_cpu
