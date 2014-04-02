@@ -98,10 +98,10 @@ endif
 #	$(AR) -rc $(BINDIR)/project.a $(BINDIR)/$(PROJECT).o
 
 # string array of all names of c files in dir
-SRC = $(wildcard *.c)
+SRC = $(wildcard *.cpp)
 
 # string array of all names replaced .c with .o
-OBJ = $(SRC:%.c=${BINDIR}${PROJECT}/%.o)
+OBJ = $(SRC:%.cpp=${BINDIR}${PROJECT}/%.o)
 
 $(BINDIR)$(PROJECT).a: $(OBJ)
 	$(AD)$(AR) -rc $(BINDIR)$(PROJECT).a $(OBJ)
@@ -117,11 +117,11 @@ $(RIOTBASE)/pkg/%/Makefile.include::
 # pull in dependency info for *existing* .o files
 -include $(OBJ:.o=.d)
 
-$(BINDIR)$(PROJECT)/%.o: %.c $(PROJDEPS) $(USEPKG:%=${BINDIR}%.a)
+$(BINDIR)$(PROJECT)/%.o: %.cpp $(PROJDEPS) $(USEPKG:%=${BINDIR}%.a)
 	@mkdir -p ${BINDIR}
-	@echo; echo "Compiling.... $*.c"; echo
+	@echo; echo "Compiling.... $*.cpp"; echo
 	@test -d $(BINDIR)$(PROJECT) || mkdir -p $(BINDIR)$(PROJECT)
-	$(AD)$(CC) $(CFLAGS) $(INCLUDES) -c $*.c -o $(BINDIR)$(PROJECT)/$*.o
+	$(AD)$(CC) $(CFLAGS) $(INCLUDES) -c $*.cpp -o $(BINDIR)$(PROJECT)/$*.o
 
 $(USEPKG:%=${BINDIR}%.a)::
 	@mkdir -p ${BINDIR}
