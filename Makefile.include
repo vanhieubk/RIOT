@@ -88,10 +88,10 @@ endif
 endif
 
 # string array of all names of c files in dir
-SRC = $(wildcard *.c)
+SRC = $(notdir $(wildcard *.c $(addsuffix *.c, $(SRCLOC) )))
 
 # string array of all names of cpp files in dir
-SRCXX = $(wildcard *.cpp)
+SRCXX = $(notdir $(wildcard *.cpp $(addsuffix *.cpp, $(SRCLOC) )))
 
 # string array of all names replaced .c with .o
 OBJC = $(SRC:%.c=${BINDIR}${APPLICATION}/%.o)
