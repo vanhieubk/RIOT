@@ -10,8 +10,12 @@ endif
 ifneq (,$(filter wsn430-v1_3b,$(BOARD)))
 	DIRS += spi
 endif
+ifneq (,$(filter iot-lab_M3,$(BOARD)))
+	DIRS += spi
+endif
 
 all: $(BINDIR)$(MODULE).a
+	echo $(DIRS)
 	@for i in $(DIRS) ; do "$(MAKE)" -C $$i || exit 1; done ;
 
 include $(RIOTBASE)/Makefile.base
