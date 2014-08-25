@@ -66,15 +66,13 @@ static void set_system_clock(void)
         /* PCLK1 = HCLK */
         RCC->CFGR |= (uint32_t)RCC_CFGR_PPRE1_DIV2;
 
-        /* NOTE : agilefox : modified to take into account the 16MHz
-                             crystal instead of 8MHz */
-        /*  PLL configuration: PLLCLK = HSE / 2  * 9 = 72 MHz */
+        /* NOTE : mboard_1 HSE value = 8000000 */
+        /*  PLL configuration: PLLCLK = HSE  * 9 = 72 MHz */
         RCC->CFGR &= (uint32_t)((uint32_t)~(RCC_CFGR_PLLSRC
                                             | RCC_CFGR_PLLXTPRE
                                             | RCC_CFGR_PLLMULL));
 
         RCC->CFGR |= (uint32_t)(RCC_CFGR_PLLSRC_HSE
-                                | RCC_CFGR_PLLXTPRE_HSE_Div2
                                 | RCC_CFGR_PLLMULL9);
 
         /* Enable PLL */

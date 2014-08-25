@@ -112,7 +112,7 @@
    Tip: To avoid modifying this file each time you need to use different HSE, you
         can define the HSE value in your toolchain compiler preprocessor.
   */
-#define HSE_VALUE    ((uint32_t)16000000) /*!< NOTE : agilefox */
+//#define HSE_VALUE    ((uint32_t)16000000) /*!< NOTE : agilefox */
 
 #if !defined  HSE_VALUE
  #ifdef STM32F10X_CL
