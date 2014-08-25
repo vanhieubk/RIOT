@@ -115,9 +115,15 @@ int _getpid(void)
  *
  * @return      TODO
  */
-int _kill_r(struct _reent *r, int pid, int sig)
+//int _kill_r(struct _reent *r, int pid, int sig)
+//{
+//    r->_errno = ESRCH;                      /* not implemented yet */
+//    return -1;
+//}
+
+int _kill(int pid, int sig)
 {
-    r->_errno = ESRCH;                      /* not implemented yet */
+    errno = EINVAL;
     return -1;
 }
 
